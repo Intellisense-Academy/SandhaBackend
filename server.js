@@ -1,24 +1,27 @@
-const prisma = require("./db");
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
+const app = require('./src/app');
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
-app.get("/users", async (req, res) => {
-  const users = await prisma.user.findMany();
-  res.json(users);
-});
-app.get("/api", (req, res) => {    
-    res.status(200).json({
-        status:true,
-        message: "Hello Developers welcome, This is Ganesh from backend side!"
-    });
+// Start the server
+const server = app.listen(PORT, () => {
+  console.log(`✅ Server is running on port ${PORT}`);
+  console.log(`🔗 http://localhost:${PORT}`);
+  console.log(`📚 API Documentation: http://localhost:${PORT}`);
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('👋 SIGTERM received. Shutting down gracefully...');
+  server.close(() => {
+    console.log('💤 Server closed. Process terminated.');
+  });
+});
+
+// Handle Ctrl+C
+process.on('SIGINT', () => {
+  console.log('👋 SIGINT received. Shutting down gracefully...');
+  server.close(() => {
+    console.log('💤 Server closed. Process terminated.');
+    process.exit(0);
+  });
 });
