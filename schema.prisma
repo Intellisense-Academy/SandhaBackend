@@ -13,7 +13,6 @@ model User {
   tenant      String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  newField    String
 
   @@map("users") // table name = users
 }
