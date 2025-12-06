@@ -1,0 +1,19 @@
+// schema.prisma
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String   @id @default(uuid())
+  name        String
+  phoneNumber String   @unique
+  password    String
+  role        String
+  tenant      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  newField    String
+
+  @@map("users") // table name = users
+}
