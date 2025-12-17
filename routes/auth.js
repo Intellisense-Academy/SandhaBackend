@@ -116,12 +116,30 @@ router.post('/register', async (req, res) => {
       });
     }
     
-    // Validate phone number format
-    const phoneRegex = /^[0-9]{10,15}$/;
+    // RESTRICTION 1: Validate name - no numbers allowed, only letters and spaces
+    const nameRegex = /^[a-zA-Z\s]+$/;
+    if (!nameRegex.test(name)) {
+      return res.status(400).json({
+        status: false,
+        message: 'Username cannot contain numbers or special characters. Only letters and spaces are allowed.'
+      });
+    }
+    
+    // RESTRICTION 2: Validate role - must be User or Admin (Enum validation)
+    const validRoles = ['User', 'Admin'];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({
+        status: false,
+        message: 'Invalid role. Role must be either "User" or "Admin"'
+      });
+    }
+    
+    // RESTRICTION 3: Validate phone number - must be exactly 10 digits
+    const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(phoneNumber)) {
       return res.status(400).json({
         status: false,
-        message: 'Invalid phone number format'
+        message: 'Invalid phone number format. Phone number must be exactly 10 digits'
       });
     }
     
