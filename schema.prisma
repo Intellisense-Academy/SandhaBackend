@@ -21,3 +21,14 @@ model User {
 
   @@map("users") // table name = users
 }
+
+model Contributor {
+  id        String   @id @default(uuid())
+  name      String
+  mobile    String   @unique
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contributors")
+}
