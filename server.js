@@ -11,9 +11,11 @@ app.use(express.json());
 // Routes
 import authRoutes from './routes/auth.js';
 import contributorsRoutes from './routes/contributors.js';
+import transactionsRoutes from './routes/transactions.js';
 
 app.use('/', authRoutes);
 app.use('/contributors', contributorsRoutes);
+app.use('/transactions', transactionsRoutes); // Assuming transactions routes are similar to contributors
 
 app.get("/api", (req, res) => {    
     res.status(200).json({

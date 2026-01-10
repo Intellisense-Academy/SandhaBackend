@@ -9,59 +9,147 @@ const connectionString = `${process.env.DATABASE_URL}`;
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
+// Helper function to validate phone number
+const validatePhoneNumber = (phone) => {
+  const phoneRegex = /^[0-9]{10}$/;
+  return phoneRegex.test(phone);
+};
+
 // Create contributor
 router.post('/', async (req, res) => {
   try {
-    const { name, mobile, amount } = req.body;
+    const { name, mobile, amount = 0 } = req.body;
 
-    if (!name || !mobile || amount === undefined) {
-      return res.status(400).json({ status: false, message: 'name, mobile and amount are required' });
+    if (!name || !mobile) {
+      return res.status(400).json({
+        status: false,
+        message: 'name and mobile are required'
+      });
     }
 
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(mobile)) {
-      return res.status(400).json({ status: false, message: 'Invalid mobile format' });
+    if (!validatePhoneNumber(mobile)) {
+      return res.status(400).json({
+        status: false,
+        message: 'Invalid mobile format (must be 10 digits)'
+      });
     }
 
     const newContributor = await prisma.contributor.create({
       data: {
         name,
         mobile,
-        amount: Number(amount),
+        amount: Number(amount)
       }
     });
 
-    res.status(201).json({ status: true, message: 'Contributor created', data: newContributor });
+    res.status(201).json({
+      status: true,
+      message: 'Contributor created successfully',
+      data: newContributor
+    });
   } catch (error) {
     console.error('Create contributor error:', error);
     if (error.code === 'P2002') {
-      return res.status(400).json({ status: false, message: 'Contributor with this mobile already exists' });
+      return res.status(400).json({
+        status: false,
+        message: 'Contributor with this mobile number already exists'
+      });
     }
-    res.status(500).json({ status: false, message: 'Server error' });
+    res.status(500).json({
+      status: false,
+      message: 'Server error',
+      error: error.message
+    });
   }
 });
 
-// List contributors
+// List contributors with optional pagination
 router.get('/', async (req, res) => {
   try {
-    const contributors = await prisma.contributor.findMany({ orderBy: { createdAt: 'desc' } });
-    res.status(200).json({ status: true, data: contributors });
+    const { page = 1, limit = 20, search } = req.query;
+    
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
+    const skip = (pageNum - 1) * limitNum;
+
+    const whereClause = {};
+    if (search) {
+      whereClause.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { mobile: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
+    const [contributors, total] = await Promise.all([
+      prisma.contributor.findMany({
+        where: whereClause,
+        include: {
+          transactions: {
+            select: {
+              id: true,
+              amount: true,
+              createdAt: true,
+              status: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limitNum
+      }),
+      prisma.contributor.count({ where: whereClause })
+    ]);
+
+    res.status(200).json({
+      status: true,
+      data: contributors,
+      pagination: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        pages: Math.ceil(total / limitNum)
+      }
+    });
   } catch (error) {
     console.error('List contributors error:', error);
-    res.status(500).json({ status: false, message: 'Server error' });
+    res.status(500).json({
+      status: false,
+      message: 'Server error'
+    });
   }
 });
 
-// Get contributor by id
+// Get contributor by ID with transaction history
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const contributor = await prisma.contributor.findUnique({ where: { id } });
-    if (!contributor) return res.status(404).json({ status: false, message: 'Contributor not found' });
-    res.status(200).json({ status: true, data: contributor });
+
+    const contributor = await prisma.contributor.findUnique({
+      where: { id },
+      include: {
+        transactions: {
+          orderBy: { createdAt: 'desc' }
+        }
+      }
+    });
+
+    if (!contributor) {
+      return res.status(404).json({
+        status: false,
+        message: 'Contributor not found'
+      });
+    }
+
+    res.status(200).json({
+      status: true,
+      data: contributor
+    });
   } catch (error) {
     console.error('Get contributor error:', error);
-    res.status(500).json({ status: false, message: 'Server error' });
+    res.status(500).json({
+      status: false,
+      message: 'Server error'
+    });
   }
 });
 
@@ -69,39 +157,156 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, mobile, amount } = req.body;
+    const { name, mobile } = req.body;
 
     const updateData = {};
-    if (name !== undefined) updateData.name = name;
-    if (mobile !== undefined) updateData.mobile = mobile;
-    if (amount !== undefined) updateData.amount = Number(amount);
+    if (name) updateData.name = name;
+    if (mobile) {
+      if (!validatePhoneNumber(mobile)) {
+        return res.status(400).json({
+          status: false,
+          message: 'Invalid mobile format'
+        });
+      }
+      updateData.mobile = mobile;
+    }
 
-    const updated = await prisma.contributor.update({ where: { id }, data: updateData });
-    res.status(200).json({ status: true, message: 'Contributor updated', data: updated });
+    const updatedContributor = await prisma.contributor.update({
+      where: { id },
+      data: updateData,
+      include: {
+        transactions: true
+      }
+    });
+
+    res.status(200).json({
+      status: true,
+      message: 'Contributor updated successfully',
+      data: updatedContributor
+    });
   } catch (error) {
     console.error('Update contributor error:', error);
-    if (error.code === 'P2025') {
-      return res.status(404).json({ status: false, message: 'Contributor not found' });
-    }
     if (error.code === 'P2002') {
-      return res.status(400).json({ status: false, message: 'Mobile already in use' });
+      return res.status(400).json({
+        status: false,
+        message: 'Mobile number already exists'
+      });
     }
-    res.status(500).json({ status: false, message: 'Server error' });
+    if (error.code === 'P2025') {
+      return res.status(404).json({
+        status: false,
+        message: 'Contributor not found'
+      });
+    }
+    res.status(500).json({
+      status: false,
+      message: 'Server error'
+    });
   }
 });
 
-// Delete contributor
+// Delete contributor (soft delete - keep records for audit)
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    await prisma.contributor.delete({ where: { id } });
-    res.status(200).json({ status: true, message: 'Contributor deleted' });
+
+    // Check if contributor exists
+    const contributor = await prisma.contributor.findUnique({
+      where: { id }
+    });
+
+    if (!contributor) {
+      return res.status(404).json({
+        status: false,
+        message: 'Contributor not found'
+      });
+    }
+
+    // Delete contributor and cascade delete transactions
+    await prisma.contributor.delete({
+      where: { id }
+    });
+
+    res.status(200).json({
+      status: true,
+      message: 'Contributor deleted successfully'
+    });
   } catch (error) {
     console.error('Delete contributor error:', error);
-    if (error.code === 'P2025') {
-      return res.status(404).json({ status: false, message: 'Contributor not found' });
+    res.status(500).json({
+      status: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// Get all contributors for dropdown/autocomplete
+router.get('/list/autocomplete', async (req, res) => {
+  try {
+    const { search = '' } = req.query;
+
+    const contributors = await prisma.contributor.findMany({
+      where: {
+        OR: [
+          { name: { contains: search, mode: 'insensitive' } },
+          { mobile: { contains: search, mode: 'insensitive' } }
+        ]
+      },
+      select: {
+        id: true,
+        name: true,
+        mobile: true,
+        amount: true
+      },
+      take: 20
+    });
+
+    res.status(200).json({
+      status: true,
+      data: contributors
+    });
+  } catch (error) {
+    console.error('Autocomplete error:', error);
+    res.status(500).json({
+      status: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// Get contributor transaction history with date filtering
+router.get('/:id/transactions', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { startDate, endDate, status } = req.query;
+
+    const whereClause = { contributorId: id };
+
+    if (status) {
+      whereClause.status = status;
     }
-    res.status(500).json({ status: false, message: 'Server error' });
+
+    if (startDate || endDate) {
+      whereClause.createdAt = {};
+      if (startDate) whereClause.createdAt.gte = new Date(startDate);
+      if (endDate) whereClause.createdAt.lte = new Date(endDate);
+    }
+
+    const transactions = await prisma.transaction.findMany({
+      where: whereClause,
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.status(200).json({
+      status: true,
+      data: transactions
+    });
+  } catch (error) {
+    console.error('Get contributor transactions error:', error);
+    res.status(500).json({
+      status: false,
+      message: 'Server error'
+    });
   }
 });
 
