@@ -1,0 +1,477 @@
+{
+  "info": {
+    "name": "Sandha Backend - Complete API Collection",
+    "description": "Complete collection for Contributors & Transactions Management API",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Contributors",
+      "item": [
+        {
+          "name": "Create Contributor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rajesh Kumar\",\n  \"mobile\": \"9876543210\",\n  \"email\": \"rajesh@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contributors",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contributors"]
+            }
+          }
+        },
+        {
+          "name": "Get All Contributors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contributors?page=1&limit=10&search=&sort=name&order=asc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contributors"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "sort",
+                  "value": "name"
+                },
+                {
+                  "key": "order",
+                  "value": "asc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Contributor By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contributors/{{contributor_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contributors", "{{contributor_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Contributor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rajesh Kumar Updated\",\n  \"mobile\": \"9876543211\",\n  \"email\": \"rajesh.new@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contributors/{{contributor_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contributors", "{{contributor_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Contributor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contributors/{{contributor_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contributors", "{{contributor_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Autocomplete Contributor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contributors/list/autocomplete?search=Raj",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contributors", "list", "autocomplete"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Raj"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Contributor Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contributors/{{contributor_id}}/transactions?month=2026-01&status=completed",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contributors", "{{contributor_id}}", "transactions"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-01"
+                },
+                {
+                  "key": "status",
+                  "value": "completed"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Contributor Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contributors/{{contributor_id}}/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contributors", "{{contributor_id}}", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Get Contributors",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\"{{contributor_id}}\", \"{{contributor_id}}\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contributors/bulk/get",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contributors", "bulk", "get"]
+            }
+          }
+        },
+        {
+          "name": "Dashboard - All Contributors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contributors/dashboard/all",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contributors", "dashboard", "all"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Search Contributor by Name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/search/contributor?name=Raj",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "search", "contributor"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Raj"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contributorName\": \"Rajesh Kumar\",\n  \"amount\": 1000,\n  \"month\": \"2026-01\",\n  \"paymentMethod\": \"cash\",\n  \"status\": \"completed\",\n  \"notes\": \"Monthly contribution\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transactions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions"]
+            }
+          }
+        },
+        {
+          "name": "Get All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions?page=1&limit=20&sortBy=createdAt&order=desc",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "order",
+                  "value": "desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/{{transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "{{transaction_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Transaction",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1500,\n  \"status\": \"completed\",\n  \"paymentMethod\": \"online\",\n  \"notes\": \"Updated note\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transactions/{{transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "{{transaction_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Transaction",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/{{transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "{{transaction_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Filter by Month and Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/filter/month-status?month=2026-01&paymentStatus=completed&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "filter", "month-status"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-01"
+                },
+                {
+                  "key": "paymentStatus",
+                  "value": "completed"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Paid vs Unpaid Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/summary/paid-unpaid?month=2026-01",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "summary", "paid-unpaid"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-01"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Dashboard - Contributor Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/dashboard/contributor-summary?month=2026-01",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "dashboard", "contributor-summary"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-01"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Dashboard - Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/dashboard/statistics?month=2026-01",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "dashboard", "statistics"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-01"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bulk Get Transactions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\"{{transaction_id}}\", \"{{transaction_id}}\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transactions/bulk/get",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "bulk", "get"]
+            }
+          }
+        },
+        {
+          "name": "Payment Methods Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/stats/payment-methods?month=2026-01",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "stats", "payment-methods"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-01"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Monthly Collection Trend",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions/stats/monthly-trend",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "stats", "monthly-trend"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "contributor_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

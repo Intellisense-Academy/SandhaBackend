@@ -1,0 +1,388 @@
+{
+  "api_examples": {
+    "contributors": {
+      "create": {
+        "endpoint": "POST /api/contributors",
+        "request": {
+          "name": "Rajesh Kumar",
+          "mobile": "9876543210",
+          "amount": 0
+        },
+        "response_201": {
+          "status": true,
+          "message": "Contributor created successfully",
+          "data": {
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "name": "Rajesh Kumar",
+            "mobile": "9876543210",
+            "amount": 0,
+            "createdAt": "2026-01-10T10:30:00Z",
+            "updatedAt": "2026-01-10T10:30:00Z"
+          }
+        },
+        "response_400_duplicate": {
+          "status": false,
+          "message": "Contributor with this mobile number already exists"
+        },
+        "response_400_invalid_phone": {
+          "status": false,
+          "message": "Invalid mobile format (must be 10 digits)"
+        }
+      },
+      "list": {
+        "endpoint": "GET /api/contributors?page=1&limit=20&search=raj",
+        "response_200": {
+          "status": true,
+          "data": [
+            {
+              "id": "550e8400-e29b-41d4-a716-446655440000",
+              "name": "Rajesh Kumar",
+              "mobile": "9876543210",
+              "amount": 5000,
+              "transactions": [
+                {
+                  "id": "tx-001",
+                  "amount": 1000,
+                  "createdAt": "2026-01-05T15:30:00Z",
+                  "status": "completed"
+                },
+                {
+                  "id": "tx-002",
+                  "amount": 1500,
+                  "createdAt": "2026-01-03T10:15:00Z",
+                  "status": "completed"
+                }
+              ],
+              "createdAt": "2026-01-01T00:00:00Z",
+              "updatedAt": "2026-01-10T10:30:00Z"
+            }
+          ],
+          "pagination": {
+            "total": 45,
+            "page": 1,
+            "limit": 20,
+            "pages": 3
+          }
+        }
+      },
+      "get_by_id": {
+        "endpoint": "GET /api/contributors/550e8400-e29b-41d4-a716-446655440000",
+        "response_200": {
+          "status": true,
+          "data": {
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "name": "Rajesh Kumar",
+            "mobile": "9876543210",
+            "amount": 5000,
+            "transactions": [
+              {
+                "id": "tx-001",
+                "amount": 1000,
+                "phoneNumber": "9876543210",
+                "paymentMethod": "cash",
+                "status": "completed",
+                "notes": "Initial payment",
+                "createdAt": "2026-01-05T15:30:00Z",
+                "updatedAt": "2026-01-05T15:30:00Z"
+              },
+              {
+                "id": "tx-002",
+                "amount": 1500,
+                "phoneNumber": "9876543210",
+                "paymentMethod": "bank transfer",
+                "status": "completed",
+                "notes": "Monthly contribution",
+                "createdAt": "2026-01-03T10:15:00Z",
+                "updatedAt": "2026-01-03T10:15:00Z"
+              }
+            ],
+            "createdAt": "2026-01-01T00:00:00Z",
+            "updatedAt": "2026-01-10T10:30:00Z"
+          }
+        },
+        "response_404": {
+          "status": false,
+          "message": "Contributor not found"
+        }
+      },
+      "update": {
+        "endpoint": "PUT /api/contributors/550e8400-e29b-41d4-a716-446655440000",
+        "request": {
+          "name": "Rajesh Kumar Singh",
+          "mobile": "9876543211"
+        },
+        "response_200": {
+          "status": true,
+          "message": "Contributor updated successfully",
+          "data": {
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "name": "Rajesh Kumar Singh",
+            "mobile": "9876543211",
+            "amount": 5000,
+            "transactions": [],
+            "createdAt": "2026-01-01T00:00:00Z",
+            "updatedAt": "2026-01-10T11:00:00Z"
+          }
+        }
+      },
+      "autocomplete": {
+        "endpoint": "GET /api/contributors/list/autocomplete?search=raj",
+        "response_200": {
+          "status": true,
+          "data": [
+            {
+              "id": "550e8400-e29b-41d4-a716-446655440000",
+              "name": "Rajesh Kumar",
+              "mobile": "9876543210",
+              "amount": 5000
+            },
+            {
+              "id": "550e8400-e29b-41d4-a716-446655440001",
+              "name": "Rajeev Kumar",
+              "mobile": "9876543211",
+              "amount": 2500
+            }
+          ]
+        }
+      },
+      "transactions_history": {
+        "endpoint": "GET /api/contributors/550e8400-e29b-41d4-a716-446655440000/transactions?startDate=2026-01-01&endDate=2026-01-31&status=completed",
+        "response_200": {
+          "status": true,
+          "data": [
+            {
+              "id": "tx-001",
+              "amount": 1000,
+              "phoneNumber": "9876543210",
+              "paymentMethod": "cash",
+              "status": "completed",
+              "notes": "Initial payment",
+              "createdAt": "2026-01-05T15:30:00Z",
+              "updatedAt": "2026-01-05T15:30:00Z"
+            }
+          ]
+        }
+      }
+    },
+    "transactions": {
+      "create": {
+        "endpoint": "POST /api/transactions",
+        "request": {
+          "contributorId": "550e8400-e29b-41d4-a716-446655440000",
+          "amount": 2000,
+          "phoneNumber": "9876543210",
+          "paymentMethod": "cash",
+          "status": "completed",
+          "notes": "Contribution for January"
+        },
+        "response_201": {
+          "status": true,
+          "message": "Transaction created successfully",
+          "data": {
+            "id": "tx-uuid-123",
+            "contributorId": "550e8400-e29b-41d4-a716-446655440000",
+            "amount": 2000,
+            "phoneNumber": "9876543210",
+            "paymentMethod": "cash",
+            "status": "completed",
+            "notes": "Contribution for January",
+            "contributor": {
+              "id": "550e8400-e29b-41d4-a716-446655440000",
+              "name": "Rajesh Kumar",
+              "mobile": "9876543210",
+              "amount": 7000
+            },
+            "createdAt": "2026-01-10T12:00:00Z",
+            "updatedAt": "2026-01-10T12:00:00Z"
+          }
+        },
+        "response_400_invalid_phone": {
+          "status": false,
+          "message": "Invalid phone number format (must be 10 digits)"
+        },
+        "response_404_not_found": {
+          "status": false,
+          "message": "Contributor not found"
+        }
+      },
+      "list": {
+        "endpoint": "GET /api/transactions?page=1&limit=20&startDate=2026-01-01&endDate=2026-01-31&status=completed",
+        "response_200": {
+          "status": true,
+          "data": [
+            {
+              "id": "tx-001",
+              "amount": 1000,
+              "phoneNumber": "9876543210",
+              "paymentMethod": "cash",
+              "status": "completed",
+              "notes": "Initial payment",
+              "contributor": {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "name": "Rajesh Kumar",
+                "mobile": "9876543210",
+                "amount": 5000
+              },
+              "createdAt": "2026-01-05T15:30:00Z",
+              "updatedAt": "2026-01-05T15:30:00Z"
+            },
+            {
+              "id": "tx-002",
+              "amount": 1500,
+              "phoneNumber": "9876543210",
+              "paymentMethod": "bank transfer",
+              "status": "completed",
+              "notes": "Monthly contribution",
+              "contributor": {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "name": "Rajesh Kumar",
+                "mobile": "9876543210",
+                "amount": 5000
+              },
+              "createdAt": "2026-01-03T10:15:00Z",
+              "updatedAt": "2026-01-03T10:15:00Z"
+            }
+          ],
+          "pagination": {
+            "total": 150,
+            "page": 1,
+            "limit": 20,
+            "pages": 8
+          }
+        }
+      },
+      "get_by_id": {
+        "endpoint": "GET /api/transactions/tx-001",
+        "response_200": {
+          "status": true,
+          "data": {
+            "id": "tx-001",
+            "amount": 1000,
+            "phoneNumber": "9876543210",
+            "paymentMethod": "cash",
+            "status": "completed",
+            "notes": "Initial payment",
+            "contributor": {
+              "id": "550e8400-e29b-41d4-a716-446655440000",
+              "name": "Rajesh Kumar",
+              "mobile": "9876543210",
+              "amount": 5000,
+              "createdAt": "2026-01-01T00:00:00Z",
+              "updatedAt": "2026-01-10T10:30:00Z"
+            },
+            "createdAt": "2026-01-05T15:30:00Z",
+            "updatedAt": "2026-01-05T15:30:00Z"
+          }
+        }
+      },
+      "update": {
+        "endpoint": "PUT /api/transactions/tx-001",
+        "request": {
+          "amount": 1200,
+          "status": "completed",
+          "notes": "Updated payment amount"
+        },
+        "response_200": {
+          "status": true,
+          "message": "Transaction updated successfully",
+          "data": {
+            "id": "tx-001",
+            "amount": 1200,
+            "phoneNumber": "9876543210",
+            "paymentMethod": "cash",
+            "status": "completed",
+            "notes": "Updated payment amount",
+            "contributor": {
+              "id": "550e8400-e29b-41d4-a716-446655440000",
+              "name": "Rajesh Kumar",
+              "mobile": "9876543210",
+              "amount": 5100
+            },
+            "createdAt": "2026-01-05T15:30:00Z",
+            "updatedAt": "2026-01-10T13:00:00Z"
+          }
+        }
+      },
+      "delete": {
+        "endpoint": "DELETE /api/transactions/tx-001",
+        "response_200": {
+          "status": true,
+          "message": "Transaction deleted successfully"
+        },
+        "note": "Contributor amount will be reversed if transaction was completed"
+      }
+    },
+    "dashboard": {
+      "contributor_summary": {
+        "endpoint": "GET /api/transactions/dashboard/contributor-summary?startDate=2026-01-01&endDate=2026-01-31",
+        "response_200": {
+          "status": true,
+          "data": [
+            {
+              "contributor": {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "name": "Rajesh Kumar",
+                "mobile": "9876543210",
+                "amount": 5000,
+                "createdAt": "2026-01-01T00:00:00Z",
+                "updatedAt": "2026-01-10T10:30:00Z"
+              },
+              "totalTransactionAmount": 5000,
+              "transactionCount": 5
+            },
+            {
+              "contributor": {
+                "id": "550e8400-e29b-41d4-a716-446655440001",
+                "name": "Priya Singh",
+                "mobile": "9876543211",
+                "amount": 3500,
+                "createdAt": "2026-01-02T00:00:00Z",
+                "updatedAt": "2026-01-08T14:20:00Z"
+              },
+              "totalTransactionAmount": 3500,
+              "transactionCount": 4
+            },
+            {
+              "contributor": {
+                "id": "550e8400-e29b-41d4-a716-446655440002",
+                "name": "Amit Patel",
+                "mobile": "9876543212",
+                "amount": 2000,
+                "createdAt": "2026-01-03T00:00:00Z",
+                "updatedAt": "2026-01-07T09:45:00Z"
+              },
+              "totalTransactionAmount": 2000,
+              "transactionCount": 2
+            }
+          ]
+        }
+      },
+      "statistics": {
+        "endpoint": "GET /api/transactions/dashboard/statistics?startDate=2026-01-01&endDate=2026-01-31",
+        "response_200": {
+          "status": true,
+          "data": {
+            "totalTransactions": 150,
+            "totalAmount": 75000,
+            "uniqueContributors": 35,
+            "averageContribution": 500
+          }
+        },
+        "interpretation": {
+          "totalTransactions": "Total number of completed transactions",
+          "totalAmount": "Sum of all completed transaction amounts",
+          "uniqueContributors": "Number of unique contributors with transactions",
+          "averageContribution": "Average transaction amount (totalAmount / totalTransactions)"
+        }
+      }
+    },
+    "filter_examples": {
+      "date_range": "GET /api/transactions?startDate=2026-01-01&endDate=2026-01-31",
+      "by_contributor": "GET /api/transactions?contributorId=550e8400-e29b-41d4-a716-446655440000",
+      "by_status": "GET /api/transactions?status=completed",
+      "by_payment_method": "GET /api/transactions?paymentMethod=cash",
+      "combined_filters": "GET /api/transactions?contributorId=xxx&startDate=2026-01-01&endDate=2026-01-31&status=completed&page=1&limit=20",
+      "search_contributors": "GET /api/contributors?search=rajesh&page=1&limit=20"
+    }
+  }
+}
