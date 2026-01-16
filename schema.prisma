@@ -23,13 +23,13 @@ model User {
 }
 
 model Contributor {
-  id           String        @id @default(uuid())
-  name         String
-  mobile       String        @unique
-  amount       Float         @default(0) // Total contributions
-  transactions Transaction[] // Relationship to transactions
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id            String        @id @default(uuid())
+  name          String
+  mobile        String        @unique
+  amount        Float         @default(0)
+  transactions  Transaction[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@map("contributors")
 }
@@ -42,11 +42,14 @@ model Transaction {
   phoneNumber   String   // Can be different from contributor's stored number
   paymentMethod String   @default("cash") // cash, bank transfer, upi, etc.
   status        String   @default("completed") // completed, pending, failed
+  month         String   // YYYY-MM format for filtering
   notes         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@index([contributorId])
   @@index([createdAt])
+  @@index([month])
+  @@index([status])
   @@map("transactions")
 }
